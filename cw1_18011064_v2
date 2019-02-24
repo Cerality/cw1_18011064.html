@@ -4,7 +4,7 @@
 		
 		Changelog 
 		15/10/2018 Template released, the basic template was tested - mouse tracking is partially complete, colour selection is partially complete
-	
+		24/02/2019 Set canvas to 800x600 pixels, extended functionality implemented in the first colour selector to the other three and tested
 	
 	
 		Suggested Tasks:
@@ -234,7 +234,7 @@
 			the first (work out how this sets the width) = 100 
 			the second (work out how this sets the height) = 100 
 	-->
-	<body onload="fnInitialise(100, 100);">
+	<body onload="fnInitialise(800, 600);">
 
 		<!-- 
 			this div block (HTML page divider) is used to hold the entire interactive painting HTML elements 
@@ -257,9 +257,9 @@
             <!-- this div block is only used to group and hold the HTML colour selection tool elements -->
             <div id="cw1ColoursContainer">
 				<div id="colour1" class="tool" onclick="fnColourSelected(this);"></div>
-				<div id="colour2" class="tool"></div>
-				<div id="colour3" class="tool"></div>
-				<div id="colour4" class="tool"></div>
+				<div id="colour2" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour3" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour4" class="tool" onclick="fnColourSelected(this);"></div>
             </div>
          	
             <!-- this div block is only used to group and hold the HTML control tool elements -->
@@ -276,7 +276,7 @@
 		*****************************************************************************************
 		Test Date, Use & Operatins No (1-6), Description, What did you test, Results, Reflections			
 		*****************************************************************************************
-			
+		24/02/2019, (4), 4 working colours, tested each colour works and that it changes correctly, all 4 colour selectors are working, will add further colour selectors at a later date 	
 			
 		
 	
