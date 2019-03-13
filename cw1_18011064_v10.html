@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="en">
+	<!-- 
+		
+		Changelog 
+		15/10/2018 Template released, the basic template was tested - mouse tracking is partially complete, colour selection is partially complete
+		24/02/2019 Set canvas to 800x600 pixels, extended functionality implemented in the first colour selector to the other three and tested
+				  Expanded canvas function so that it actually works and resets the canvas' background colour to the currently selected colour
+				   Added 4 extra colours to bring total to 8, border colour is changed to white when element is selected, created function to reset border colour back to default once another colour has been selected
+		06/03/2019 Fixed css hover not working after colour selected
+					Fixed colour not being indicated when page first loaded
+					Added 4 brush size selectors - i'm looking to improve the look of these at a later date 
+		07/03/2019 Renamed brush size function to just a size function, as when new features are added. this will be used for them aswell
+					Fixed issue with size decreasing below zero, and then fixed issue with size not increasing once it reached 2
+					Added display for the primary and background colours, and size.
+					Created ideaslog to keep track of new ideas or things I still need to implement
+		08/03/2019 Minor variable name changes and added extra comments (e.g. oFirstColour to oInitialColour)
+					Added return to default button which returns all canvas settings e.g. colour, size and background to the originals on load
+					Added eraser button/mode
+					Added update indicators function which can be called to update all the display indicators
+					Fixed all errors which were recorded in last test log
+		08/03/2019	Added mode indicator display and fixed errors found after testing
+					Fixed mouse pointer not exactly on brush by offsetting according to the brush size
+		09/03/2019  Added sliders and colour box for the user to chose their own rgb colour and paint with it
+					Minor change to the brush sizes (made large and largest a bit bigger)
+					
+					
+		Ideaslog and need to implement later log: Found myself thinking of more ideas than I can implement at a time so keeping a log to track things i need to add later
+		Spray mode
+		Alert/ alert box when canvas reset button is pressed so the user knows to change colour to begin painting again
+		Css improvement/ make it look better
+		Indication of where mouse is in eraser mode?
+		Undo/redo functions
+					
+		Suggested Tasks:
+		1. Take time to fully review and become familiar with this template and ensure it works (in the sense that there are no errors).
+		2. Fully read the assignment brief - it contains all the requirements and details you need to design, test and implement
+		3. After each development cycle (e.g. any time spent programming - this could be an hour to several hours) you are expected to add a changelog entry; each entry should include the date followed by a single sentence that describes what has been changed, updated, added, fixed etc (Please note this is a CORE expectation and requirements, get in to the habit of added them as you go!)
+		4. After you have implemented a requirement (there are 11 in total; these are described in sections 2 & 3 of the Marks Awarded section of the assignment brief) conduct and document a test to check whether the implemented requirement works as expected and as needed.  Record these tests in the test log section located and the bottom of this page.
+		5. You are not allowed to remove any code already provided but you can expand and further develop it
+			5a. Any new functions must abide by the naming convention specified in the assignment brief (e.g. fnPaint should be fnPaint_MW)
+			5b. Any new variables must abide by the naming convention specified in the assignment brief (e.g. iMouseX the initial "i" to indicate it will hold an integer value or sColour to indicate a string value)
+			5c. Change the name of this template so that YOUR ACTUAL student id replaces the word "studentid" in the filename 
+		6. Work to complete the various requirements - start with the simplest, 
+			6a. Review and work out how to set the canvas to a more appropriate size (e.g. 800 pixels wide and tall)
+			6b.	Extend the functionality implemented in the first colour selector to the other three
+			6c. Expand the fnClearCanvas function so that it actually works
+			6d. Work out how to enhance the clear canvas function so that it resets the canvas' background colour to the currently selected colour; 
+				dont forget to update the important variables (e.g. sCanvasColour)
+			6e. Extend the colour selection tools so that there are eight working tools
+			6f. Design some method to indicate which colour is active; this should automatically change as soon as a new colour is selected
+			6g. This template includes some interested opportunities to explore holding down the control, alt and shift keys while moving the mouse; 
+				see if you can somehow use these examples to add implement any of the requirements (e.g. erase mode, brush size, etc.) - remember,
+				don't try to solve the whole thing in a single instance, build it up little by little, keep copies of your work so if everything breaks
+				you can also return to a working version and try again
+
+		Critical note:
+			Please ensure that you maintain and use the expected programming standards outlined in the brief in the Marks Awarded section 4.1 to 4.5 (Programming Standards and Documentation) - especially the use of the REQUIRED function and variable naming convention /
+
+			You will be expected to maintain, program and submit neat code that fully supports appropriate indentation and comments - don't forget failure to maintain standards will result in a significant penalty.  
+
+		Good luck, before we leave you to get on with this - remember, by completing the tutorial sessions and practical’s all this should (at least) be familiar; complete the tutorials before attempting to program this system. 
+
+	-->
+	
+	<head> 
+		<title>Coursework 1 Template v10.0</title>
+		
+		<style>
+			/* 
+				Notes on styling.
+				if you are interested in knowing or using more CSS search "HTML CSS" online; please note - this is a programming challenge, and although a good aesthetic is helpful there are almost no marks for spending time playing with CSS 
+			*/
+
+            body { 
+            	/* 
+            		this css selector (body) tells the browser that this style block applies to ALL <body> elements on this page; just because there is only 1 <body> doesnt make any difference 
+            	*/
+                background-color: #c0c0c0; /* this css property sets the background colour of the entire body of the web page */
+                /* 
+                	the colour: #c0c0c0 uses the format RRGGBB (RR=c0, GG=c0, BB=c0), anytime all the three channels (RGB) is all the same the resulting colour is a shade of grey. Each channel can be 0 to 255 (or in HEX: 00 to FF)
+                */
+            }
+
+
+            #cw1MainContainer { 
+            	/* 
+            		this css selector ("#" followed by "cw1MainContainer") tells the browser that this style block applies to ONLY the element with the id="cw1MainContainer" - the # tells the browser to match IDs
+            	*/
+                position: absolute; /* this css property tells the browser that the selected element (in this case id="cw1MainContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the top left and corner */
+                left: 20px; /* this css property defines/sets the left position for the selected element; in essence, how far from the left edge it should be placed */
+                top: 20px; /* this css property defines/sets the top position for the selected element; in essence, how far from the top edge it should be placed */
+            }
+            
+
+			canvas { 
+				/* 
+					this css selector (canvas) tells the browser that this style block applies to ALL <canvas> elements on this page; just because there is only 1 doesnt make any difference 
+				*/
+                background-color: #fafafa; /* this css property defines/sets the background colour of the selected element (in this case <canvas>) */
+                border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case <canvas>) */
+				cursor: crosshair; /* this css property defines/sets the shape and type of the mouse pointer when over this element */
+			}
+			
+
+			#cw1ColoursContainer {
+				position: relative; /* this css property tells the browser that the selected element (in this case id="cw1ColoursContainer") will be specifically told where to be displayed using LEFT and TOP (for x and y). 0, 0 being the last position of the previous element (rather than the top left corner) */
+			}
+			
+
+			#cw1ControlsContainer {
+				position: relative;
+				top: 60px; /* this css property tells the browser to move down 60px; because we are positioned 'relatively' this is relative from the previous elements position rather the the top, left corner */
+			}
+			
+			#cw1BrushSizeContainer {
+				position: relative;
+				top: 70px; /* move down 70px relative to the previous element position */
+			}
+			
+			#cw1IndicatorContainer {
+				position:relative;
+				top: 80px; /*move down 100px relative to the previous element position */
+				font-size: 11px; changes font of the indicator headings
+			}
+			
+			#cw1RGBSelectorContainer {
+				position:relative;
+				top: 160px; /*move down 100px relative to the previous element position */
+			}
+			
+
+            .tool { /* this css selector ("." followed by "tool") tells the browser that this style block applies to ONLY the elements with a matching class, e.g. class="tool" */
+				position: absolute;
+				width: 50px;
+				height: 50px;
+				border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="tool") */
+			}
+			
+
+			.tool:hover { /* this ":hover" is a special css condition that to automatically applied if the mouse is moved (or hovers) over the specified element (in this case elements with class="tool") */
+				border: 1px solid #f0f0f0 !important; /* this css property defines/sets the border of the selected element (in this case the elements with the class tool) */
+			}										/* added !important to give priority over javascript, will keep an eye to see if bugs arise from this */
+			
+			.indicator { /*this tells the browsers to apply style block to indicator class */
+				position: absolute;
+				width: 50px;
+				height: 50px;
+				border: 1px solid #a0a0a0; /* this css property defines/sets the border of the selected element (in this case the elements with class="tool") */
+			}
+
+			#colour1 { /* this style is applied to elements with a specific id, in this instance "colour1" */
+				left: 0px; /* set the element's left position, how far from the left edge of the parent container */
+				top: 0px; /* set the element's top position, how far from the top edge of the parent container */
+				background-color: #ff0000;
+			}
+
+
+			#colour2 { /* apply this style to element id="colour2" */
+				left: 60px;
+				top: 0px;
+				background-color: #00ff00;
+			}
+            
+
+			#colour3 { /* apply this style to element id="colour3" */
+				left: 120px;
+				top: 0px;
+				background-color: #0000ff;
+			}
+
+			
+			#colour4 { /* apply this style to element id="colour4" */
+				left: 180px;
+				top: 0px;
+				background-color: #ff00ff;
+			}
+
+			
+			#colour5 { /* apply this style to element id="colour5" */
+				left: 240px;
+				top: 0px;
+				background-color: #ffff00;
+			}
+
+			
+			#colour6 { /* apply this style to element id="colour6" */
+				left: 300px;
+				top: 0px;
+				background-color: #00ffff;
+			}
+
+			
+			#colour7 { /* apply this style to element id="colour7" */
+				left: 360px;
+				top: 0px;
+				background-color: #ffffff;
+			}
+
+			
+			#colour8 { /* apply this style to element id="colour8" */
+				left: 420px;
+				top: 0px;
+				background-color: #000000;
+			}
+			
+			#indicator1 {
+				left: 0px;
+				top: 20px;
+				background-color: #000000; /*since the default starting primary colour is black, this will set it at the beginning */
+			}
+			
+			#indicator2 {
+				left: 60px;
+				top: 20px;
+				background-color: #ffffff; /*since the default starting background colour is white, this will set it at the beginning */
+			}
+			
+			#indicator3 {
+				left: 120px;
+				top: 20px;
+				background-color: #ffa500; /*sets to orange to make it stand out */
+				color: #ffffff;
+				text-align: center; /*puts in centre and makes font size to fill the element */
+				font-size: 33px; 
+			}
+			
+			#indicator4 {
+				left: 180px;
+				top: 20px;
+				background-color: #00b0ff; /*sets to orange to make it stand out */
+				color: #ffffff;
+				text-align: center; /*puts in centre and makes font size to fill the element */
+				font-size: 33px;
+				width: 140px
+			}
+			
+			#rgbcolour { /* apply this style to element id="colour8" */
+				left: 420px;
+				top: 0px;
+				background-color: #7f7f7f;
+			}
+
+
+ 
+		</style>
+		
+		<script>
+			var oCanvas, oCanvasContext; //declare the global variables used to hold and control the canvas element
+			var sFillColour; //create a global variable used to hold the active/selected colour
+			var sCanvasColour; //create a global variable used to hold the canvas colour
+			var iMouseX, iMouseY; //declare the global variables used to hold the mouse's coordinates
+			var iBrushWidth, iBrushHeight; //declare the global variables used to hold the selected brush sizes
+			var sMode //declare the global variable for the current mode the user is in
+			var iOffset //declare the global variable for the current offset
+			var oSlider1, oSlider2, oSlider3 // declare slider variables
+
+			function fnInitialise(iCanvasWidth, iCanvasHeight) {
+				//this function is called via the HTML body tag and the onload event
+				fnDebugMessage("Running fnInitialise"); //debug message
+				oCanvas = document.getElementById("cw1Canvas"); //create a reference to the HTML canvas element
+				if (oCanvas.getContext) { //test to see if we can read the canvas' context; if true we have found the canvas
+					oCanvas.width=iCanvasWidth; //set the canvas width using the width argument passed to the fnInitialise function
+					oCanvas.height=iCanvasHeight; //set the canvas height using the width argument passed to the fnInitialise function
+					oCanvasContext = oCanvas.getContext("2d"); //set the context to 2D
+					fnDebugMessage("Canvas size, width: " + iCanvasWidth + ", height: " + iCanvasHeight); //debug message, if this message appears in 
+					
+					//set some default values`
+					sCanvasColour=getComputedStyle(oCanvas).getPropertyValue("background-color"); //this instruction automatically detects the background colour of the cavas and stores it in the global sCanvasColour variable
+					fnDebugMessage("Canvas background colour: " + sCanvasColour); //debug message, if this message appears in 
+
+					//let set a default brush size
+					iBrushWidth=5;
+					iBrushHeight=5;
+					document.getElementById("indicator3").innerHTML = iBrushHeight; //sets size indicator
+					
+					//setting starting brush colour - starting background colour is not needed as it automatically defaults to white
+					var oInitialColour //variable to store the element of the initial colour
+					var sInitialColour //variable to store the colour code of the initial colour
+					oInitialColour = document.getElementById("colour8") //retrieves and stores element of initial colour to variable
+					sInitialColour=getComputedStyle(oInitialColour).getPropertyValue("background-color") //retrieves colour of initial colour element
+					fnSetFillColour(sInitialColour); //execute the fnSetFillColour and pass it the value we are holding in the sColour variable
+					oInitialColour.style.borderColor="#ffffff"; //highlights the selected element, by changing it's border colour to white
+					sMode = "PAINT";  	//sets mode to paint mode
+					fnUpdateIndicators_CD(); //update indicators
+					
+				} else {
+					fnDebugMessage("fnInitialise, failed to get the canvas's context"); //debug message, we were unable to get the canvas' context
+				}	
+			}
+						
+
+			function fnDebugMessage(sMessage) {
+				//this function posts the specific value (sMessage) to the console - a good way of debugging and testing
+				console.log("Debug Message: " + sMessage);
+			}
+			
+			
+			function fnPaint(iX, iY, iWidth, iHeight) {
+				//use this function to fill a rectangle at the specific location (x, y) and specified size (width, height) and specified colour (colour)
+				//by switching the value provided for sColour to the canvas background colour you will be able to use this to erase painted marks
+				fnDebugMessage("fnPaint called at x: " + iX + "Offset, y: " + iY + "Offset, w: " + iWidth + ", h: " + iHeight); //send a debug message with the location and size
+				iOffset = -iBrushHeight/2 //This adjusts the offset according to the brush size (this can be brush height whilst brush height and width remain the same in my code, divided by 2 since the top left hand corner of the paint brushed on the canvas is on the mouse pointer, so this puts it in the middle
+				oCanvasContext.fillStyle = sFillColour; //use the value stored in the sFillColour global variable as the fill colour
+				oCanvasContext.fillRect(iX + iOffset, iY + iOffset, iWidth, iHeight); //fillRect() method (function) draws a "filled" rectangle; default color was specified by the fillstyle
+			}
+			
+
+			function fnClearCanvas() {
+				//use this function to clear the canvas - extra note: now also resets the canvas background colour to the currently selected colour
+				fnDebugMessage("fnClear Canvas"); //send a debug message with the function being called
+				
+				sCanvasColour = sFillColour; //Sets (updates) the canvas colour to the currently selected fill colour
+				oCanvasContext.fillStyle = sCanvasColour; //Sets the fill style to the canvas colour - this needs to be done here as if a colour is selected, but not painted with yet, 
+														//the fnPaint will not have been called, so the fillStyle will not have been updated
+				oCanvasContext.fillRect(0, 0, oCanvas.width, oCanvas.height); //fills entire canvas as specified by parameters with the current fillStyle
+				fnUpdateIndicators_CD(); //sets display for background colour to the new background colour
+			}
+			
+			function fnReturnToDefault_CD() { //function to restore everything to defaults
+				var oDefaultElement = document.getElementById("colour8");
+				fnColourSelected(oDefaultElement); //sets primary colour back to black and highlights the black colour element
+				sCanvasColour ="#ffffff";
+				oCanvasContext.fillStyle = sCanvasColour;
+				oCanvasContext.fillRect(0, 0, oCanvas.width, oCanvas.height); //sets canvas colour to white
+				iBrushHeight = 5
+				iBrushWidth = 5
+				sMode = "PAINT"
+				fnUpdateIndicators_CD(); //updates display indicators
+			}
+			
+			function fnEraserMode_CD() { //function to enable eraser mode 
+				fnSetFillColour(sCanvasColour);
+				sMode = "ERASER"; //sets mode to eraser mode
+				fnUpdateIndicators_CD() //updates indicators 
+			}
+
+			
+			function fnSetFillColour(sColour) {
+				//use this function to set the fill colour (this refers to the activated colour)
+				fnDebugMessage("fnSetFillColour: " + sColour); //send a debug message with the function being called and the value
+				sFillColour=sColour; //store the value provided as sColour
+				fnUpdateIndicators_CD(); //Sets display for primary colour to the new fill colour
+			}
+	
+			
+			function fnColourSelected(oElement) {
+				//use this function to process the colour selection tool
+				var sColour;
+
+				//lets use JavaScript to get the colour of the select element
+				sColour=getComputedStyle(oElement).getPropertyValue("background-color"); //this instruction automatically detects the background colour of the element that was self referenced and stores it in the local sColour variable
+				fnSetFillColour(sColour); //execute the fnSetFillColour and pass it the value we are holding in the sColour variable
+				
+				fnResetBorderColours_CD("cw1ColoursContainer"); //resets border colours of the elements in the colours container
+				fnResetBorderColours_CD("cw1RGBSelectorContainer") //resets border colour of the rgbcolour element in it's container
+				
+				oElement.style.borderColor="#ffffff"; //highlights the selected element, by changing it's border colour to white
+				
+				sMode = "PAINT"; //sets mode to paint, this will need to be moved later when other modes are added e.g. spray, but for now/testing it can remain here.
+			}
+			
+			function fnSizeSelected_CD (iSize) {
+				//this function processes the main size selection tools 
+				iBrushHeight = iSize;
+				iBrushWidth = iSize; //sets height and width to argument passed in function
+				document.getElementById("indicator3").innerHTML = iSize; //sets size display to the size chosen
+				
+			}
+			
+			function fnSizeChange_CD (iSizeChange) {
+				//this function process the size increase/decrease tools
+				if (iBrushHeight<=2 && iSizeChange==-1) { //stops the size from decreasing below 2 (to avoid a size 0 or negative, and I deem 1 too small)
+				iBrushHeight = 2;
+				iBrushWidth = 2;
+				
+				} else {
+				iBrushHeight = iBrushHeight + iSizeChange; //Increases/decreases the size 
+				iBrushWidth = iBrushWidth + iSizeChange;
+				fnUpdateIndicators_CD(); //sets size indicator, again iBrushHeight and iBrushWidth will always be the same for the foreseeable future
+				}
+				
+				
+				fnDebugMessage("Brush size change to:" + iBrushHeight); //debug message of size- since I plan for height and width to be the same for the moment, I only need to display one of them
+			}
+			
+			function fnUpdateIndicators_CD () {
+				document.getElementById("indicator1").style.backgroundColor = sFillColour; //Sets display for primary colour to the new fill colour
+				document.getElementById("indicator2").style.backgroundColor = sCanvasColour; //sets display for background colour to the new background colour
+				document.getElementById("indicator3").innerHTML = iBrushHeight; //sets size indicator, again iBrushHeight and iBrushWidth will always be the same for the foreseeable future
+				document.getElementById("indicator4").innerHTML = sMode; //sets size indicator, again iBrushHeight and iBrushWidth will always be the same for the foreseeable future
+			}
+
+			function fnSliderInputRecieved_CD () {
+				var iRedSlider = parseInt(document.getElementById("slider1").value); //These first three variables store the value the slider is currently at when the function is called
+				var iGreenSlider = parseInt(document.getElementById("slider2").value); //parseInt ensures this is defined as an integer (otherwise for example .toString may not work)
+				var iBlueSlider = parseInt(document.getElementById("slider3").value);
+				
+				var sRedSliderHex = (iRedSlider < 16) ? "0" + iRedSlider.toString(16) : iRedSlider.toString(16); //Converts the integer variables above to hexadecimal utilizing a conditional statement and .toString 
+				var sGreenSliderHex = (iGreenSlider < 16) ? "0" + iGreenSlider.toString(16) : iGreenSlider.toString(16); //If the integer is less than 16 (which is represented as 00 to 0f in hex), a "0" string to added to the beginning of the string
+				var sBlueSliderHex = (iBlueSlider < 16) ? "0" + iBlueSlider.toString(16) : iBlueSlider.toString(16); //as .toString will just output a single character for these numbers, which we can't use for hexcode. Otherwise the integer is passed through .toString
+																													//.toString(16) convert a number object (in our case just an integer) to a string, using base 16 (which is what hexadecimal is) to represent any numeric values
+				var sRGBMixedColour = "#" + sRedSliderHex + sGreenSliderHex + sBlueSliderHex;	// concatenates the # and three two digit hex values into one string to be used as the colour hexcode
+				document.getElementById("rgbcolour").style.backgroundColor = sRGBMixedColour;	// changes the colour of the rgbcolour element to the hexcode colour provided by the sliders and this function
+			}
+			
+			function fnTrackMouse(e) {
+				//this function is called "everytime" the user's mouse is moved when over the associated element (in this case the canvas)
+				//we have also added the ability for it to accept a parameter (called e, actually we can call it anything but as event is a reserved work "e" makes some sense
+				var canvasRect = oCanvas.getBoundingClientRect(); //use this function to dynamically get the size of the canvas and its position
+				iMouseX=(e.clientX - canvasRect.left); //modify the original position of the mouse by accounting for the position on the canvas; on the x
+				iMouseY=(e.clientY - canvasRect.top); //modify the original position of the mouse by accounting for the position on the canvas; on the y
+				
+				fnDebugMessage("Tracking mouse: ALT key detected: " + e.altKey); //update the console to show if the alt key code is being pressed 
+				fnDebugMessage("Tracking mouse: SHIFT key detected: " + e.shiftKey); //update the console to show if shift key is being pressed 
+				fnDebugMessage("Tracking mouse: CNTRL key detected: " + e.ctrlKey); //update the console to show if control key is being pressed 
+
+				if (e.buttons==1) { //this checks to see if the user is pressing the left mouse button (1 = the left mouse button)
+					//the user has pressed the left button - so lets start painting
+					fnPaint(iMouseX, iMouseY, iBrushWidth, iBrushHeight); //call the fnPaint function and pass it the coordinates and size to paint
+				}
+
+				fnDebugMessage("Tracking mouse: x: " + iMouseX + ", y: "+iMouseY); //update the console to show the mouse position, dont forget, you may need to include an offset to centre the paint effect
+			}
+			
+			function fnResetBorderColours_CD(sToolContainerType) { //Resets border colours of all tools in container using the container argument passed to this function, this is so the tools becomes
+																	// 'unhighlighted' when another tool in the same container is chosen
+				var oContainerElement = document.getElementById(sToolContainerType); // Retrieves the element object representing the element whose id matches the argument passed to this function - in this case, one of the tool containers
+				var oToolElement = oContainerElement.getElementsByClassName("tool"); // Retrieves collection of all elements with class name "tool" in an array (so gets all tools), of which we can now use this manipulate them all at once
+				var iToolNumber; 														//Generic integer variable used for function below
+				for (iToolNumber = 0; iToolNumber < oToolElement.length; iToolNumber++) { // oToolElement.length, is the length of the array i.e. how many values it contains
+																						// So this executes the code below for i=0,1,2,3.... last index reference of the array - therefore executing for every value in the array
+					oToolElement[iToolNumber].style.borderColor = "#a0a0a0";			// This is the block of code that will be executed by the for loop 
+				}
+			}	
+	
+		</script>
+
+	</head>
+	
+	<!-- 
+		this "onload" event fires when the HTML <body> has loaded. In essence, we are telling the browser that once the page 
+		has completely loaded all the content to execute a script. 
+		in this case the function being called is "fnInitialise" and we are passing it two parameters: 
+			the first (work out how this sets the width) = 100 
+			the second (work out how this sets the height) = 100 
+	-->
+	<body onload="fnInitialise(800, 600);"> <!-- Passes argument to fnInitialise function to set canvas width and height -->
+
+		<!-- 
+			this div block (HTML page divider) is used to hold the entire interactive painting HTML elements 
+			the benefit of putting multiple elements in a single container is that if you set the location of the 
+			container each of the elements held by the container will move relative to it; move one, move all 
+		-->
+        <div id="cw1MainContainer">
+
+            <!-- this div block is only used to hold the HTML canvas element -->
+            <div id="cw1CanvasContainer">
+                <canvas id="cw1Canvas" onmousemove="fnTrackMouse(event);"></canvas> 
+                <!-- 
+                	by specifing the onmouseover event the canvas will call the "fnTrackMouse" function EVERY time the 
+                	mouse moves 1 pixel over the canvas.
+                	by passing the JavaScript "event" we are effectively also passing details about the event, 
+                	e.g. where the mouse was, what buttons were pressed etc. 
+                -->
+            </div>
+			
+            <!-- this div block is only used to group and hold the HTML colour selection tool elements -->
+            <div id="cw1ColoursContainer">
+				<div id="colour1" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour2" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour3" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour4" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour5" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour6" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour7" class="tool" onclick="fnColourSelected(this);"></div>
+				<div id="colour8" class="tool" onclick="fnColourSelected(this);"></div>
+            </div>
+			
+            <!-- this div block is only used to group and hold the HTML control tool elements -->
+            <div id="cw1ControlsContainer">
+				<button id="control1" onclick="fnClearCanvas();">Reset</button>
+				<button id="control2" onclick="fnReturnToDefault_CD();">Default</button>
+				<button id="control3" onclick="fnEraserMode_CD();">Eraser</button>
+            </div>
+			
+			<!-- this div block is only used to group and hold brush/spray/eraser size selection element -->
+			<div id="cw1BrushSizeContainer">	
+				<b> SIZE </b>
+				<button id="size1" onclick="fnSizeSelected_CD(2);">SMALL</button>
+				<button id="size2" onclick="fnSizeSelected_CD(5);">MEDIUM</button>
+				<button id="size3" onclick="fnSizeSelected_CD(20);">LARGE</button>
+				<button id="size4" onclick="fnSizeSelected_CD(50);">LARGEST</button>
+				<button id="size5" onclick="fnSizeChange_CD(1);">INCREASE</button>
+				<button id="size6" onclick="fnSizeChange_CD(-1);">DECREASE</button>
+         	</div>
+			
+			<!--this div block is only used to group and hold the indicator elements-->
+			<div id="cw1IndicatorContainer">
+				<b>  PRIMARY|BACKGROUND|SIZE </b>
+				<div id="indicator1" class="indicator"></div> <!-- primary colour indicator-->
+				<div id="indicator2" class="indicator"></div> <!-- background colour indicator-->
+				<div id="indicator3" class="indicator"></div> <!-- Size indicator-->
+				<div id="indicator4" class="indicator"></div> <!-- Mode indicator-->
+			</div>	
+
+			<!--this div block is only used to group and hold the rgb colour selection elements-->
+			<div id="cw1RGBSelectorContainer">
+				<input type="range" min="0" max="255" value="127" class="slider" id="slider1" oninput="fnSliderInputRecieved_CD()"> <!-- Red slider -->
+				<input type="range" min="0" max="255" value="127" class="slider" id="slider2" oninput="fnSliderInputRecieved_CD()">  <!-- Green slider -->
+				<input type="range" min="0" max="255" value="127" class="slider" id="slider3" oninput="fnSliderInputRecieved_CD()"> <!-- Blue slider -->
+				<div id="rgbcolour" class="tool" onclick="fnColourSelected(this);"></div> <!-- Displays current rgb colour and allows the user to click it, to select that colour as the paint colour -->
+			</div>
+            
+        </div>
+		
+	</body>
+	
+	<!-- 
+		Test Log
+		*****************************************************************************************
+		Test Date, Use & Operatins No (1-6), Description, What did you test, Results, Reflections			
+		*****************************************************************************************
+		24/02/2019, (4), 4 working colours, tested each colour works and that it changes correctly, all 4 colour selectors are working, will add further colour selectors at a later date 	
+		24/02/2019, (6), clear canvas and resets to currently selected fill colour, that is approriately resets the canvas to the currently chosen colour, success!, need to add functionality to show current background/canvas colour to user at a later date
+		24/02/2019, (4), 8 colours, active colour is indicated, that each colour is highlighted when active and that non-active colours return to default border colour, success!, can use the same function for the control tools
+		06/03/2019, (4,6), Testing after return to coding, retested all parts of the current code, all, the css hover stops working after a colour is selected; when page is first loaded the colour is black, but that is not indicated; otherwise successful, will fix and update in the change log
+		06/03/2019, (3), Brush size selectors, that they change the brush size, success! all working correcting, need to add an indicator of current brush size in next session of coding
+		07/03/2019, (3), Brush size increase/decrease, that the increase/decrease buttons worked, they do function however they can decrease to 0/negative, need to input a function to stop this, otherwise works well
+		07/03/2019, (3), Brush size increase/decrease, that it didn't go below 2/negative, once it reaches size 2, it won't increase, need to fix this otherwise it works great
+		07/03/2019, (1,3,4,6), General test, testing everything after a session of coding, everything works as expected except doesnt paint on mouse pointer exactly when size is larger and the size display does not change when a specified size is selected (does when increase/decrease is selected). fixed size display by adding code to update it and will fix the mouse pointer issue next session
+		08/03/2019, (1,2,3,4,6), General test, testing everything after a session of coding, (return to default does reset highlight of colours, background colour only updates after pressing default button twice, hard to see where brush will erase in eraser mode- add to ideaslog, brush size does not return to default), overall progressing well will fix these before I start v9 or add to ideaslog
+		08/03/2019, (1,2), Display indicator for mode, indicator for mode, mode indicator starts as undefined, eraser mode takes two presses to update indicator otherwise works as expected, need to set mode in fnInitialise and update indicators in eraser function
+		08/03/2019, (1,3), Paint and size change, that it paints exactly underneath the mouse, it always paints underneath the mouse no matter the size, good solution implemented
+		09/03/2019, (5), blender tool, that the blender tool allows a custom rgb colour to be created and selected, colour of the box to show custom rgb colour does not work- the correct value shows in debug message however, need to ensure the rgb colour variable used to colour the element is a string!
+		09/03/2019, (5). blender tool, same as previous entry, success! user can create custom colour and paint with it - everything else interacts with no errors and as expected, great most of the main features are finished
+		09/03/2019
+		
+	-->
+
+</html>
